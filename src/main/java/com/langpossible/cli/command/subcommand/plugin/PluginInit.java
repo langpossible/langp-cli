@@ -25,22 +25,21 @@ public class PluginInit implements Runnable {
 
             terminal.writer().println("编辑插件的资料：");
 
-            // Step 1: 插件名称
-            String pluginName = reader.readLine("插件名称（按下回车键进入下一步）： ");
-
-            // Step 2: 插件描述
-            String pluginDescription = reader.readLine("插件描述（按下回车键进入下一步）： ");
-
-            // Step 3: 插件作者
-            String pluginAuthor = reader.readLine("插件作者（按下回车键进入下一步）： ");
-
-            // Step 4: 插件版本
-            String pluginVersion = reader.readLine("插件版本（按下回车键进入下一步）： ");
-
-            // Step 6: 插件类型
+            /* Step 1: 资料输入 */
+            // Step 1-1: 插件名称
+            String name = reader.readLine("插件名称（按下回车键进入下一步）： ");
+            // Step 1-2: 插件描述
+            String description = reader.readLine("插件描述（按下回车键进入下一步）： ");
+            // Step 1-3: 插件作者
+            String author = reader.readLine("插件作者（按下回车键进入下一步）： ");
+            // Step 1-4: 插件版本
+            String version = reader.readLine("插件版本（按下回车键进入下一步）： ");
+            // Step 1-5: 插件类型
             List<String> options = List.of("工具", "模型");
             OptionSelector selector = new OptionSelector(terminal, "请选择插件类型：", options);
-            String pluginType = selector.run();
+            String type = selector.run();
+
+            /* Step 2: 插件初始化 */
 
         } catch (Exception e) {
             Logger.error("", e);
