@@ -1,6 +1,6 @@
-package com.langpossible.command;
+package com.langpossible.cli.command;
 
-import com.langpossible.command.subcommand.plugin.PluginInit;
+import com.langpossible.cli.command.subcommand.plugin.PluginInit;
 import picocli.CommandLine;
 
 @CommandLine.Command(
