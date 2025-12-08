@@ -63,7 +63,6 @@ public class OptionSelector {
                 selected = (selected + 1) % options.size();
             } else if ("enter".equals(key)) {
                 String choice = options.get(selected);
-                terminal.writer().println("你选择了: " + choice);
                 terminal.writer().flush();
                 return choice;
             }

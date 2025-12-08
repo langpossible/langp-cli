@@ -19,6 +19,7 @@
         <snakeyaml.version>2.0</snakeyaml.version>
         <jline.version>3.25.0</jline.version>
         <tinylog.version>2.7.0</tinylog.version>
+        <hutool-all.version>5.8.40</hutool-all.version>
     </properties>
 
     <dependencies>
@@ -69,6 +70,13 @@
             <groupId>org.tinylog</groupId>
             <artifactId>tinylog-impl</artifactId>
             <version>${tinylog.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool-all.version}</version>
         </dependency>
     </dependencies>
 
