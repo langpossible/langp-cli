@@ -71,7 +71,7 @@ public class PluginInit implements Runnable {
             // Step 2-2: 编译插件原型
             terminal.writer().println("正在检查插件原型依赖...");
             terminal.flush();
-            boolean dependencyInstalled = MavenDependencyCheckerUtil.isDependencyInstalled("com.langpossible", "langp-plugin-archetype", "1.0.0");
+            boolean dependencyInstalled = MavenDependencyCheckerUtil.isDependencyInstalled("com.langpossible", "langp-plugin-archetype", "1.0.1");
             if (!dependencyInstalled) {
                 terminal.writer().println("插件依赖不存在，正在安装插件依赖...");
                 terminal.flush();
@@ -87,7 +87,7 @@ public class PluginInit implements Runnable {
                     "archetype:generate",
                     "-DarchetypeGroupId=com.langpossible",
                     "-DarchetypeArtifactId=langp-plugin-archetype",
-                    "-DarchetypeVersion=1.0.0",
+                    "-DarchetypeVersion=1.0.1",
                     "-DgroupId=com.langpossible",
                     "-DartifactId=" + name.toLowerCase() + "-plugin",
                     "-DName=" + name,
