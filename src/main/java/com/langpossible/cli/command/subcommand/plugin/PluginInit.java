@@ -88,7 +88,7 @@ public class PluginInit implements Runnable {
                     "-DarchetypeGroupId=com.langpossible",
                     "-DarchetypeArtifactId=langp-plugin-archetype",
                     "-DarchetypeVersion=1.0.1",
-                    "-DgroupId=com.langpossible",
+                    "-DgroupId=com.langpossible.plugin",
                     "-DartifactId=" + name.toLowerCase() + "-plugin",
                     "-DName=" + name,
                     "-DDescription=\"" + description + "\"",
