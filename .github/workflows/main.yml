@@ -1,0 +1,129 @@
+name: Cross-platform Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # 推送版本号 tag 时触发，例如 v1.0.0
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Run jpackage (Linux)
+        run: |
+          jpackage \
+            --input target \
+            --main-jar langp-cli.jar \
+            --main-class com.langpossible.cli.Application \
+            --name langp-cli \
+            --type deb \
+            --dest dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installer
+          path: dist/*
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Run jpackage (Windows)
+        run: |
+          jpackage ^
+            --type exe ^
+            --input target ^
+            --main-jar langp-cli.jar ^
+            --main-class com.langpossible.cli.Application ^
+            --name langp-cli ^
+            --dest dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Run jpackage (macOS)
+        run: |
+          jpackage \
+            --input target \
+            --main-jar langp-cli.jar \
+            --main-class com.langpossible.cli.Application \
+            --name langp-cli \
+            --type dmg \
+            --dest dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-installer
+          path: dist/*
+
+  release:
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-installer
+          path: dist/linux
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/windows
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-installer
+          path: dist/macos
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/linux/*
+            dist/windows/*
+            dist/macos/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
