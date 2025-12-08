@@ -51,13 +51,14 @@ jobs:
         run: mvn clean package
 
       - name: Run jpackage (Windows)
+        shell: bash
         run: |
-          jpackage ^
-            --type exe ^
-            --input target ^
-            --main-jar langp-cli.jar ^
-            --main-class com.langpossible.cli.Application ^
-            --name langp-cli ^
+          jpackage \
+            --input target \
+            --main-jar langp-cli.jar \
+            --main-class com.langpossible.cli.Application \
+            --name langp-cli \
+            --type exe \
             --dest dist
 
       - name: Upload artifact
