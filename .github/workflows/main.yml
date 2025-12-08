@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'   # 推送版本号 tag 时触发，例如 v1.0.0
 
+permissions:
+  contents: write
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
