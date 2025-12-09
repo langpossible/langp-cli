@@ -17,6 +17,8 @@ public class CommandUtil {
     public static Result run(String dirPath, String... commands) {
         Assert.isTrue(commands.length > 0, "命令不能为空");
 
+        Assert.isTrue(CommandCheckUtil.isCommandAvailable(commands[0]), "未检测到 " + commands[0] + " 命令，请安装后运行该指令，如已安装请配置为全局命令");
+
         String commandsStr = CharSequenceUtil.join(" ", (Object) commands);
         Logger.info("运行命令：{}", commandsStr);
         CommandLine cmdLine = CommandLine.parse(commandsStr);

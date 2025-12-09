@@ -1,8 +1,10 @@
 package com.langpossible.cli.utils;
 
+import com.langpossible.cli.result.Result;
+
 import java.io.File;
 
-public class MavenDependencyCheckerUtil {
+public class MavenDependencyUtil {
 
     /**
      * 检查本地 Maven 仓库中是否存在某个依赖
@@ -11,7 +13,7 @@ public class MavenDependencyCheckerUtil {
      * @param version    依赖的版本 {@link String}
      * @return {@link Boolean}
      */
-    public static boolean isDependencyInstalled(String groupId, String artifactId, String version) {
+    public static boolean isInstalled(String groupId, String artifactId, String version) {
         // 获取本地仓库路径，默认 ~/.m2/repository
         String repoPath = System.getProperty("user.home") + "/.m2/repository";
 
@@ -24,6 +26,15 @@ public class MavenDependencyCheckerUtil {
 
         File jarFile = new File(jarPath);
         return jarFile.exists();
+    }
+
+    public static boolean install(String groupId, String artifactId, String version, String sourcePath) {
+        boolean installed = MavenDependencyUtil.isInstalled(groupId, artifactId, version);
+        if (!installed) {
+            Result result = CommandUtil.run(sourcePath, "mvn", "clean", "install");
+            return result.exitCode == 0;
+        }
+        return true;
     }
 
 }

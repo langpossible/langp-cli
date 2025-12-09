@@ -4,10 +4,10 @@ import cn.hutool.core.lang.Assert;
 import com.langpossible.cli.components.OptionSelector;
 import com.langpossible.cli.config.GlobalConfig;
 import com.langpossible.cli.result.Result;
-import com.langpossible.cli.utils.CommandCheckUtil;
 import com.langpossible.cli.utils.CommandUtil;
 import com.langpossible.cli.utils.DirectoryUtil;
-import com.langpossible.cli.utils.MavenDependencyCheckerUtil;
+import com.langpossible.cli.utils.GitUtil;
+import com.langpossible.cli.utils.MavenDependencyUtil;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -25,11 +25,6 @@ public class PluginInit implements Runnable {
 
     @Override
     public void run() {
-        // 前置校验
-        Assert.isTrue(CommandCheckUtil.isCommandAvailable("git"), "未检测到 GIT 命令，请安装 GIT 后运行该指令，如已安装请配置为全局命令");
-        Assert.isTrue(CommandCheckUtil.isCommandAvailable("java"), "未检测到 JAVA 命令，请安装 JAVA 后运行该指令，如已安装请配置为全局命令");
-        Assert.isTrue(CommandCheckUtil.isCommandAvailable("mvn"), "未检测到 MVN 命令，请安装 MAVEN 后运行该指令，如已安装请配置为全局命令");
-
         try {
             Terminal terminal = TerminalBuilder.builder().system(true).jna(true).build();
             terminal.enterRawMode();
@@ -52,33 +47,27 @@ public class PluginInit implements Runnable {
             String type = selector.run();
 
             /* Step 2: 插件初始化 */
-            // Step 2-1: 安装插件原型
-            System.out.println("Step 2-1: 安装插件原型");
-            terminal.writer().println("正在检查插件原型...");
+            // Step 2-1: 检查核心组件
+            terminal.writer().println("正在检查核心组件...");
             terminal.flush();
-            boolean archetypeExists = DirectoryUtil.isExists(GlobalConfig.PLUGIN_ARCHETYPE_PATH);
-            if (!archetypeExists) {
-                terminal.writer().println("插件原型不存在，正在下载插件原型...");
-                terminal.flush();
-                Result result = CommandUtil.run(GlobalConfig.PLUGIN_PATH, "git", "clone", "https://github.com/langpossible/langp-plugin-archetype.git");
-                Assert.isTrue(result.exitCode == 0, "插件初始化失败，插件原型下载异常");
-            } else {
-                terminal.writer().println("插件原型已存在，正在更新插件原型...");
-                terminal.flush();
-                Result result = CommandUtil.run(GlobalConfig.PLUGIN_ARCHETYPE_PATH, "git", "pull");
-                Assert.isTrue(result.exitCode == 0, "插件初始化失败，插件原型更新异常");
-            }
-            // Step 2-2: 编译插件原型
-            terminal.writer().println("正在检查插件原型依赖...");
+            Boolean langpCoreCloneFlag = GitUtil.clone("langp-core", "https://github.com/langpossible/langp-core.git");
+            Assert.isTrue(langpCoreCloneFlag, "插件初始化失败，核心组件下载异常");
+            // Step 2-2: 检查核心组件依赖
+            terminal.writer().println("正在检查核心组件依赖...");
             terminal.flush();
-            boolean dependencyInstalled = MavenDependencyCheckerUtil.isDependencyInstalled("com.langpossible", "langp-plugin-archetype", "1.0.1");
-            if (!dependencyInstalled) {
-                terminal.writer().println("插件依赖不存在，正在安装插件依赖...");
-                terminal.flush();
-                Result result = CommandUtil.run(GlobalConfig.PLUGIN_ARCHETYPE_PATH, "mvn", "clean", "install");
-                Assert.isTrue(result.exitCode == 0, "插件初始化失败，插件原型编译异常");
-            }
-            // Step 2-3: 创建插件项目
+            boolean langpCoreInstallFlag = MavenDependencyUtil.install("com.langpossible", "langp-core", "1.0.1", GlobalConfig.REPOSITORY_PATH + "/" + "langp-core");
+            Assert.isTrue(langpCoreInstallFlag, "插件初始化失败，核心组件安装异常");
+            // Step 2-3: 安装插件原型
+            terminal.writer().println("正在安装插件原型...");
+            terminal.flush();
+            Boolean archetypeCloneFlag = GitUtil.clone("langp-plugin-archetype", "https://github.com/langpossible/langp-plugin-archetype.git");
+            Assert.isTrue(archetypeCloneFlag, "插件初始化失败，插件原型下载异常");
+            // Step 2-4: 编译插件原型
+            terminal.writer().println("正在编译插件原型...");
+            terminal.flush();
+            boolean archetypeInstallFlag = MavenDependencyUtil.install("com.langpossible", "langp-plugin-archetype", "1.0.1", GlobalConfig.REPOSITORY_PATH + "/" + "langp-archetype-plugin");
+            Assert.isTrue(archetypeInstallFlag, "插件初始化失败，插件原型安装异常");
+            // Step 2-5: 创建插件项目
             terminal.writer().println("正在创建插件项目...");
             terminal.flush();
             Result createProjectResult = CommandUtil.run(
